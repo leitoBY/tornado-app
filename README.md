@@ -2,7 +2,7 @@
 tornado web-app, sqlalchemy
 
 1. install requirements.
-``` pip install requirements.txt -r```
+``` pip install -r requirements.txt```
 2. run server
 ``` python server.py ```
 

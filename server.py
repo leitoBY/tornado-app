@@ -5,10 +5,15 @@ import tornado.web
 
 from models import User
 from connection import session
+from migrations import metadata, engine
+
+class TableCreateHandler(tornado.web.RequestHandler):
+    def get(self):
+        metadata.create_all(engine)
+        self.write('ok')
 
 class MainHandler(tornado.web.RequestHandler):
     def get(self):
-        # user = session.query(User).get(1)
         users = session.query(User).all()
         users_list = []
         for user in users:
@@ -17,12 +22,10 @@ class MainHandler(tornado.web.RequestHandler):
 
     def post(self):
         body = json_decode(self.request.body)
-        name = body.get('name')
-        email = body.get('email')
-
         user = User(
-            name=name,
-            email=email,
+            name=body.get('name'),
+            email=body.get('email'),
+            password=body.get('password'),
             created_at=datetime.now()
         )
         session.add(user)
@@ -40,7 +43,7 @@ def repr(user: User) -> dict:
 
 def make_app():
     return tornado.web.Application([
-        (r'/', MainHandler),
+        (r'/', MainHandler), (r'/create_all', TableCreateHandler)
         ], debug=True)
 
 if __name__ == '__main__':
